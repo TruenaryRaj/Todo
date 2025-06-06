@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: todo_api_pass
+      MYSQL_USER: todo_api_user
+      MYSQL_PASSWORD: todo_api_pass
+      MYSQL_DATABASE: todo_api
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "3306:3306"
+volumes:
+  mysql-data:
