@@ -4,8 +4,9 @@ import { TodoRepository } from '../repositories/todo.repository';
 export const todoController = {
 
     async createTodo(req: Request, res: Response) {
-        const{title,description,date} = req.body;
-        await TodoRepository.createTodo({ title, description, date });
+        const{title, description, date} = req.body;
+        const user_id = Number(req.user?.id);
+        await TodoRepository.createTodo({ title, description, date, user_id });
           
          res.status(201).json({
              message: 'Created successfully'

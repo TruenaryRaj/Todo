@@ -1,8 +1,11 @@
 import mysql from 'mysql2/promise';
+import {drizzle} from 'drizzle-orm/mysql2';
 
-export const db = mysql.createPool({
+ const pool = mysql.createPool({
     host: 'localhost',
     user:'todo_api_user',
     password:'todo_api_pass',
     database:'todo_api'
 })
+
+export const db = drizzle(pool);
