@@ -2,9 +2,9 @@ import { userRepository } from "../repositories/user.repository";
 import { Request, Response, RequestHandler} from "express";
 import { db } from '../db/db';
 import bcrypt from 'bcrypt';
-import { users } from '../db/schema/user.schema';
+import { user } from '../db/schema/user.schema';
 import { eq } from 'drizzle-orm';
-import jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken'; 
 
 
 export const userController = {
@@ -34,7 +34,7 @@ export const userController = {
     },
 
     async updateUser( req: Request, res: Response) {
-        const { id, email, password} = req.body;
+        const {id, email, password} = req.body;
         await userRepository.updateUser({ id, email, password});
 
         res.json({
@@ -42,22 +42,33 @@ export const userController = {
         })
     },
 
-    async userLogin( req: Request, res: Response) {
-        const { email, password} = req.body;
+    async userLogin (req: Request, res: Response) {
+    const { email, password } = req.body;
 
-        const user = await db.select().from(users).where(eq(users.email, email));
+    const users = await db
+        .select()
+        .from(user)
+        .where(eq(user.email, email))
+        .limit(1);
 
-        const isMatch = await bcrypt.compare(password, user[0].password!);
+    if (users.length === 0) {
+         throw new Error("Invalid email or password");
+    }
 
-        if(!user.length || !isMatch) {
-            res.json({message: 'invalid username or password'});
-        }
+    const foundUser = users[0];
 
-        const token = jwt.sign(
-            { id: user[0].id, email: user[0].email },
-            process.env.JWT_SECRET!,
-            { expiresIn: '1h'}
-        )
-        res.json({ message: 'login sucessful', token });
+    const isMatch = await bcrypt.compare(password, foundUser.password!);
+
+    if (!isMatch) {
+         res.status(400).json({ message: "Invalid email or password" });
+    }
+
+    const token = jwt.sign(
+        { id: foundUser.id, email: foundUser.email },
+        process.env.JWT_SECRET!,
+        { expiresIn: '1h' }
+    );
+
+     res.status(200).json({ message: 'Login successful', token });
     }
 };

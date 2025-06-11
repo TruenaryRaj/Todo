@@ -14,9 +14,9 @@ router.get('/todo/get/:id', authenticateToken, todoController.getById);
 
 //user_routes
 router.post('/user/create', userController.createUser);
-router.get('/user/get', userController.displayUsers);
-router.put('/user/update', userController.updateUser);
-router.delete('/user/delete/:id', userController.deleteUser);
+router.get('/user/get', authenticateToken,userController.displayUsers);
+router.put('/user/update', authenticateToken,userController.updateUser);
+router.delete('/user/delete/:id', authenticateToken,userController.deleteUser);
 router.post('/user/login', userController.userLogin);
 
 export default router;

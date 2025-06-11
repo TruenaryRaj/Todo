@@ -1,31 +1,31 @@
 import { db } from '../db/db';
-import { users } from '../db/schema/user.schema';
+import { user } from '../db/schema/user.schema';
 import { eq } from 'drizzle-orm';
 import bcrypt from 'bcrypt';
 
 
 export const userRepository = {
     
-    async createUser(user: {email: string; password: string, }) {
-        const hashedPassword = await bcrypt.hash(user.password, 10);
-        await db.insert(users).values({
-            email: user.email,
+    async createUser(users: {email: string; password: string, }) {
+        const hashedPassword = await bcrypt.hash(users.password, 10);
+        await db.insert(user).values({
+            email: users.email,
             password: hashedPassword,
         });
     },
 
     async getAll() {
-        return await db.select().from(users);
+        return await db.select().from(user);
     },
 
     async delete(id: number) {
-         await db.delete(users).where(eq(users.id, id));
+         await db.delete(user).where(eq(user.id, id));
     },
 
-    async updateUser(user: { id: number; email: string; password: string }) {
-        await db.update(users).set({
-            email: user.email,
-            password: user.password
-        }).where(eq(users.id, user.id)) ;
+    async updateUser(users: { id: number; email: string; password: string }) {
+        await db.update(user).set({
+            email: users.email,
+            password: users.password
+        }).where(eq(user.id, users.id)) ;
     },
 }
